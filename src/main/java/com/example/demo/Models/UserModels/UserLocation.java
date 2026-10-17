@@ -2,8 +2,7 @@ package com.example.demo.Models.UserModels;
 
 import java.io.Serializable;
 
-
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +14,7 @@ import lombok.NonNull;
 public class UserLocation implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 4L;
 

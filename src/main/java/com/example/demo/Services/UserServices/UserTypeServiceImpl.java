@@ -14,7 +14,7 @@ import com.example.demo.Models.UserModels.UserTypes;
 import com.example.demo.Repositories.UserRepositories.UserRepository;
 import com.example.demo.Repositories.UserRepositories.UserTypeRepository;
 
-import CyclicCleaner.Cleaner;
+import com.example.demo.CyclicCleaner.Cleaner;
 
 @Service
 public class UserTypeServiceImpl implements UserTypeService {

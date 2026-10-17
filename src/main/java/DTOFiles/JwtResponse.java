@@ -10,7 +10,7 @@ public class JwtResponse implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6L;
+	private static final long serialVersionUID = 61L;
 	private String token;
 	private String type = "Bearer";
 	private String userId;

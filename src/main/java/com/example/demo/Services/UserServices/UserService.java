@@ -8,9 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.Models.UserModels.User;
 
-import DTOFiles.JwtResponse;
-import DTOFiles.PageResponseDTO;
-import DTOFiles.UserResponseDTO;
+import com.example.demo.DTOFiles.JwtResponse;
+import com.example.demo.DTOFiles.PageResponseDTO;
+import com.example.demo.DTOFiles.UserResponseDTO;
 
 public interface UserService {
 

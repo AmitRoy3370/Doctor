@@ -14,7 +14,7 @@ public class UserResponseDTO implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6L;
+	private static final long serialVersionUID = 62L;
 
 	private String id;
 

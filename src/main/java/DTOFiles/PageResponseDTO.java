@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 public class PageResponseDTO<T> implements Serializable {
 
-    private static final long serialVersionUID = 7L;
+    private static final long serialVersionUID = 71L;
 
     private List<T> content;
     private int page;

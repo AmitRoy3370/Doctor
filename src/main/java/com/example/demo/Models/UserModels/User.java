@@ -1,98 +1,110 @@
+
 package com.example.demo.Models.UserModels;
 
 import java.io.Serializable;
-
-import org.springframework.data.annotation.Id;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.NonNull;
+import jakarta.persistence.GeneratedValue;
 
 @Entity(name = "User")
-@Table(name = "User")
+@Table(name = "\"User\"")
 public class User implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	private String id;
+     @Id
+    @Column(name = "id", updatable = false, nullable = false)
+    private String id;
 
-	@NonNull
-	@Column(unique = true, name = "userName")
-	private String userName;
-	@NonNull
-	@Column(name = "name")
-	private String name;
-	@Column(name = "profileImageId")
-	private String profileImageId;
-	@NonNull
-	@Column(name = "password")
-	private String password;
+    @Column(unique = true, name = "userName")
+    private String userName;
 
-	public User(@NonNull String userName, @NonNull String name, String profileImageId, @NonNull String password) {
-		super();
-		this.userName = userName;
-		this.name = name;
-		this.profileImageId = profileImageId;
-		this.password = password;
-	}
+    @Column(name = "name")
+    private String name;
 
-	public User() {
-		super();
-	}
+    @Column(name = "profileImageId")
+    private String profileImageId;
 
-	public String getId() {
-		return id;
-	}
+    @Column(name = "password")
+    private String password;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public User(
+            String userName,
+            String name,
+            String profileImageId,
+            String password) {
+        this.userName = userName;
+        this.name = name;
+        this.profileImageId = profileImageId;
+        this.password = password;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public User() {
+        super();
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    @PrePersist
+    public void generateId() {
+        if (this.id == null || this.id.isBlank()) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getProfileImageId() {
-		return profileImageId;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public void setProfileImageId(String profileImageId) {
-		this.profileImageId = profileImageId;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+    public String getProfileImageId() {
+        return profileImageId;
+    }
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", userName=" + userName + ", name=" + name + ", profileImageId=" + profileImageId
-				+ ", password=" + password + "]";
-	}
+    public void setProfileImageId(String profileImageId) {
+        this.profileImageId = profileImageId;
+    }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    @Override
+    public String toString() {
+        return "User [id=" + id
+                + ", userName=" + userName
+                + ", name=" + name
+                + ", profileImageId=" + profileImageId
+                + ", password=[REDACTED]]";
+    }
 }

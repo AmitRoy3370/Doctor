@@ -16,7 +16,7 @@ import com.example.demo.Repositories.UserRepositories.UserRepository;
 import com.example.demo.Validators.EmailValidator;
 import com.example.demo.Validators.PhoneValidator;
 
-import CyclicCleaner.Cleaner;
+import com.example.demo.CyclicCleaner.Cleaner;
 
 @Service
 public class UserContactServiceImpl implements UserContactService {

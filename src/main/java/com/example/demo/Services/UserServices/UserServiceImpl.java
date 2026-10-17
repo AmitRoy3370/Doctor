@@ -37,10 +37,10 @@ import com.example.demo.Repositories.UserRepositories.UserTypeRepository;
 import com.example.demo.Security.JwtUtil;
 import com.example.demo.Services.SupabaseServices.SupabaseStorageService;
 
-import CyclicCleaner.Cleaner;
-import DTOFiles.JwtResponse;
-import DTOFiles.PageResponseDTO;
-import DTOFiles.UserResponseDTO;
+import com.example.demo.CyclicCleaner.Cleaner;
+import com.example.demo.DTOFiles.JwtResponse;
+import com.example.demo.DTOFiles.PageResponseDTO;
+import com.example.demo.DTOFiles.UserResponseDTO;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -84,80 +84,51 @@ public class UserServiceImpl implements UserService {
 	public JwtResponse createUser(User user, MultipartFile file) {
 
 		if (user == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		if (user.getUserName() == null || user.getPassword() == null || user.getName() == null) {
-
 			throw new NullPointerException("Have to put all the data perfectly at here...");
-
 		}
 
 		try {
-
 			User _user = userRepository.findByUserName(user.getUserName().trim()).get();
-
 			if (_user != null) {
-
 				throw new ArithmeticException();
-
 			}
-
 		} catch (ArithmeticException e) {
-
 			throw new ArithmeticException("This username is already exist at here...");
-
 		} catch (Exception e) {
-
 		}
 
 		System.out.println("before encrypted :- " + user.getPassword());
-
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-
 		System.out.println("after encrypted :- " + user.getPassword());
 
 		try {
-
 			if (file == null || file.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			String contentType = file.getContentType();
-
+			System.out.println("Content type of file :- " + contentType);
 			if (contentType != null && contentType.startsWith("image/")) {
-
 				String profileImageUrl = uploadProfileImage(file, user.getUserName());
-
 				user.setProfileImageId(profileImageUrl);
-
 			} else {
-
 				throw new ArithmeticException();
-
 			}
-
 		} catch (ArithmeticException e) {
-
 			throw new ArithmeticException("Profile image is image only....");
-
 		} catch (Exception e) {
-
 		}
 
 		user = userRepository.save(user);
 
 		if (user == null) {
-
 			throw new ArithmeticException("Registration process is not complete....");
-
 		}
 
-		String token = jwtUtil.generateToken(user.getName());
+		String token = jwtUtil.generateToken(user.getId(), user.getUserName());
 		return new JwtResponse(token, user.getId());
 	}
 
@@ -166,36 +137,24 @@ public class UserServiceImpl implements UserService {
 	public JwtResponse logIn(String userName, String password) {
 
 		if (userName == null || password == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		try {
-
 			User user = userRepository.findByUserName(userName).get();
-
 			if (user == null) {
-
 				throw new Exception();
-
 			}
-
 			if (!passwordEncoder.matches(password, user.getPassword())) {
-
 				throw new Exception();
-
 			}
 
-			String token = jwtUtil.generateToken(user.getName());
+			String token = jwtUtil.generateToken(user.getId(), user.getUserName());
 			return new JwtResponse(token, user.getId());
 
 		} catch (Exception e) {
-
 			throw new ArithmeticException("Invalid credential...");
-
 		}
-
 	}
 
 	@Override
@@ -207,118 +166,67 @@ public class UserServiceImpl implements UserService {
 
 		if (user == null || id == null || userId == null || user.getUserName() == null || user.getPassword() == null
 				|| user.getName() == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		try {
-
 			User _user = userRepository.findById(id).get();
-
 			if (_user == null) {
-
 				throw new Exception();
-
 			}
-
 			if (!user.getId().equals(userId)) {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
 
 		try {
-
 			User _user = userRepository.findByUserName(user.getUserName()).get();
-
 			if (_user != null) {
-
 				if (!_user.getId().equals(userId)) {
-
 					throw new ArithmeticException();
-
 				}
-
 			}
-
 		} catch (ArithmeticException e) {
-
 			throw new ArithmeticException("Same userName already exist...");
-
 		} catch (Exception e) {
-
 		}
 
 		System.out.println("before encrypted :- " + user.getPassword());
-
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-
 		System.out.println("after encrypted :- " + user.getPassword());
 
 		try {
-
 			if (file == null || file.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			String contentType = file.getContentType();
-
 			if (contentType != null && contentType.startsWith("image/")) {
-
 				String bucketName = supabaseProperties.getBucket().getProfile();
-
 				String fileName = user.getUserName();
-
 				supabaseStorageService.deleteFile(bucketName, fileName);
-
 				String profileImageUrl = uploadProfileImage(file, user.getUserName());
-
 				user.setProfileImageId(profileImageUrl);
-
 			} else {
-
 				throw new ArithmeticException();
-
 			}
-
 		} catch (ArithmeticException e) {
-
 			throw new ArithmeticException("Profile image must be image not other file...");
-
 		} catch (Exception e) {
-
 		}
 
 		try {
-
 			int result = userRepository.updateUser(userId, user.getName(), user.getUserName(), user.getProfileImageId(),
 					user.getPassword());
-
 			if (result >= 1) {
-
 				return user;
-
 			} else {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new ArithmeticException("Profile not updated...");
-
 		}
-
 	}
 
 	@Override
@@ -329,57 +237,34 @@ public class UserServiceImpl implements UserService {
 	public User updateName(String id, String name) {
 
 		if (id == null || name == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		User _user = null;
 
 		try {
-
 			_user = userRepository.findById(id).get();
-
 			if (_user == null) {
-
 				throw new Exception();
-
 			}
-
 			if (!_user.getId().equals(id)) {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
 
 		try {
-
 			int isUpdated = userRepository.updateName(id, name);
-
 			if (isUpdated >= 1) {
-
 				_user.setName(name);
-
 				return _user;
-
 			} else {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new ArithmeticException("User name is not updated...");
-
 		}
-
 	}
 
 	@Override
@@ -390,60 +275,37 @@ public class UserServiceImpl implements UserService {
 	public User updateUserName(String id, String userName, String userId) {
 
 		if (id == null || userName == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		User _user = null;
 
 		try {
-
 			_user = userRepository.findById(id).get();
-
 			if (_user == null) {
-
 				throw new Exception();
-
 			}
-
 			if (!_user.getId().equals(userId)) {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
 
 		try {
-
 			int isUpdated = userRepository.updateUserName(id, userName);
-
 			if (isUpdated >= 1) {
-
 				_user.setUserName(userName);
-
 				return _user;
-
 			} else {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new ArithmeticException("User name is not updated...");
-
 		}
-
 	}
 
-	@Override
+		@Override
 	@Caching(evict = { @CacheEvict(value = cacheValue, allEntries = true),
 			@CacheEvict(value = "UserContact", allEntries = true), @CacheEvict(value = "UserGender", allEntries = true),
 			@CacheEvict(value = "UserLocation", allEntries = true),
@@ -451,85 +313,61 @@ public class UserServiceImpl implements UserService {
 	public User updateProfileImage(String id, MultipartFile file, String userId) {
 
 		if (id == null || userId == null || file == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		User user = null;
 
 		try {
-
 			user = userRepository.findById(id).get();
-
 			if (user == null) {
-
 				throw new Exception();
-
 			}
-
 			if (!user.getId().equals(userId)) {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
 
 		try {
-
 			String contentType = file.getContentType();
-
 			if (contentType != null && contentType.startsWith("image/")) {
-
 				String bucketName = supabaseProperties.getBucket().getProfile();
-
 				String fileName = user.getUserName();
 
-				supabaseStorageService.deleteFile(bucketName, fileName);
+				// 👇 Safely ignore 404 if the old image doesn't exist 👇
+				if (user.getProfileImageId() != null && !user.getProfileImageId().isEmpty()) {
+					try {
+						supabaseStorageService.deleteFile(bucketName, fileName);
+					} catch (Exception e) {
+						System.out.println("Warning: Old image not found in Supabase or delete failed. Proceeding to upload. Error: " + e.getMessage());
+					}
+				}
 
+				// Upload new image
 				String profileImageUrl = uploadProfileImage(file, user.getUserName());
-
 				user.setProfileImageId(profileImageUrl);
 
 			} else {
-
 				throw new ArithmeticException();
-
 			}
-
 		} catch (ArithmeticException e) {
-
 			throw new ArithmeticException("Profile image must be image not other file...");
-
 		} catch (Exception e) {
-
+			throw new RuntimeException("Failed to upload image to Supabase: " + e.getMessage());
 		}
 
 		try {
-
 			int result = userRepository.updateProfileImage(userId, user.getProfileImageId());
-
 			if (result >= 1) {
-
 				return user;
-
 			} else {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new ArithmeticException("Profile not updated...");
-
 		}
-
 	}
 
 	@Override
@@ -540,61 +378,38 @@ public class UserServiceImpl implements UserService {
 	public User updatePassword(String id, String password) {
 
 		if (id == null || password == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		User user = null;
 
 		try {
-
 			user = userRepository.findById(id).get();
-
 			if (user == null) {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
 
 		try {
-
 			String newPassword = passwordEncoder.encode(password);
-
 			int updated = userRepository.updatePassword(id, newPassword);
-
 			user.setPassword(newPassword);
-
 			if (updated >= 1) {
-
 				return user;
-
 			} else {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new ArithmeticException("User profile is not updated...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'CountUsersNative'")
 	public long countUsersNative() {
-
 		return userRepository.countUsersNative();
-
 	}
 
 	@Override
@@ -602,29 +417,18 @@ public class UserServiceImpl implements UserService {
 	public List<UserResponseDTO> searchByNameNative(String name) {
 
 		if (name == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		try {
-
 			List<User> list = userRepository.searchByNameNative(name);
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
@@ -632,470 +436,277 @@ public class UserServiceImpl implements UserService {
 	public UserResponseDTO findByUserNameNative(String userName) {
 
 		if (userName == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
 
 		try {
-
 			User list = userRepository.findByUserNameNative(userName).get();
-
 			if (list == null) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findAllNative'")
 	public List<UserResponseDTO> findAllNative() {
-
 		try {
-
 			List<User> list = userRepository.findAllNative();
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findAllUserOrderByNameDesc'")
 	public List<UserResponseDTO> getAllUsersOrderByNameDesc() {
-
 		try {
-
 			List<User> list = userRepository.getAllUsersOrderByNameDesc();
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findUsersPagination_' + #pageable")
 	public Page<User> getUsersWithPagination(Pageable pageable) {
-
 		return (userRepository.findAll(pageable));
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findAllUsersByNameAsc'")
 	public List<UserResponseDTO> getAllUsersOrderByNameAsc() {
-
 		try {
-
 			List<User> list = userRepository.getAllUsersOrderByNameAsc();
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findAll'")
 	public List<UserResponseDTO> getAllUsers() {
-
 		try {
-
 			List<User> list = userRepository.getAllUsers();
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'CountByProfileImageId_' + #profileImageId")
 	public long countByProfileImageId(String profileImageId) {
-
 		if (profileImageId == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
-
 		return userRepository.countByProfileImageId(profileImageId);
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'CountByName_' + #name")
 	public long countByName(String name) {
-
 		if (name == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
-
 		return userRepository.countByName(name);
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'CountAllUser'")
 	public long countAllUsers() {
-
 		return userRepository.countAllUsers();
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findUsersWithProfileImage'")
 	public List<UserResponseDTO> findUsersWithProfileImage() {
-
 		try {
-
 			List<User> list = userRepository.findUsersWithProfileImage();
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findUsersWithoutProfileImage'")
 	public List<UserResponseDTO> findUsersWithoutProfileImage() {
-
 		try {
-
 			List<User> list = userRepository.findUsersWithoutProfileImage();
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByProfileImageId_' + #profileImageId")
 	public List<UserResponseDTO> findByProfileImageId(String profileImageId) {
-
 		if (profileImageId == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
-
 		try {
-
 			List<User> list = userRepository.findByProfileImageId(profileImageId);
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByUsersKeyWord_' + #keyword")
 	public List<UserResponseDTO> searchUsers(String keyWord) {
-
 		if (keyWord == null) {
-
 			throw new NullPointerException("Falsee request...");
-
 		}
-
 		try {
-
 			List<User> list = userRepository.searchUsers(keyWord);
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByUserNamePrefix_' + #userNamePrefix")
 	public List<UserResponseDTO> searchByUserName(String userNamePrefix) {
-
 		if (userNamePrefix == null) {
-
 			throw new NoSuchElementException("False reqeust....");
-
 		}
-
 		try {
-
 			List<User> list = userRepository.searchByUserName(userNamePrefix);
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByName_' + #name")
 	public List<UserResponseDTO> searchByName(String name) {
-
 		if (name == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
-
 		try {
-
 			List<User> list = userRepository.searchByName(name);
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByNamePrefix_' + #namePrefix")
 	public List<UserResponseDTO> findByNameIgnoreCase(String namePrefix) {
-
 		if (namePrefix == null) {
-
 			throw new NullPointerException("False request....");
-
 		}
-
 		try {
-
 			List<User> list = userRepository.findByNameIgnoreCase(namePrefix);
-
 			if (list.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByexistsUserName_' + #userName")
 	public boolean existsByUserName(String userName) {
-
 		if (userName == null) {
-
 			throw new NoSuchElementException("False request...");
-
 		}
-
 		return userRepository.existsByUserName(userName);
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByUserNameIgnoreCase_' + #userName")
 	public UserResponseDTO findByUserNameIgnoreCase(String userName) {
-
 		if (userName == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
-
 		try {
-
 			User list = userRepository.findByUserNameIgnoreCase(userName).get();
-
 			if (list == null) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByUserName_' + #userName")
 	public UserResponseDTO findByUserName(String userName) {
-
 		if (userName == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
-
 		try {
-
 			User list = userRepository.findByUserName(userName).get();
-
 			if (list == null) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
 	@Cacheable(value = cacheValue, key = "'findByUserId_' + #id")
 	public UserResponseDTO findUserById(String id) {
-
 		if (id == null) {
-
 			throw new NullPointerException("False request...");
-
 		}
-
 		try {
-
 			User list = userRepository.findUserById(id).get();
-
 			if (list == null) {
-
 				throw new Exception();
-
 			}
-
 			return getUserResponse(list);
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 	}
 
 	@Override
@@ -1104,37 +715,21 @@ public class UserServiceImpl implements UserService {
 			@CacheEvict(value = "UserLocation", allEntries = true),
 			@CacheEvict(value = "UserTypes", allEntries = true) })
 	public boolean deleteUserById(String id, String userId) {
-
 		if (id == null || userId == null) {
-
 			throw new NoSuchElementException("False request...");
-
 		}
-
 		try {
-
 			User _user = userRepository.findById(id).get();
-
 			if (_user == null) {
-
 				throw new Exception();
-
 			}
-
 			if (!_user.getId().equals(userId)) {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 		return cleaner.removeUserById(id);
-
 	}
 
 	@Override
@@ -1143,31 +738,18 @@ public class UserServiceImpl implements UserService {
 			@CacheEvict(value = "UserLocation", allEntries = true),
 			@CacheEvict(value = "UserTypes", allEntries = true) })
 	public boolean deleteByProfileImageId(String id, String userId) {
-
 		if (id == null || userId == null) {
-
 			throw new NoSuchElementException("False request...");
-
 		}
-
 		try {
-
 			List<User> _user = userRepository.findByProfileImageId(id);
-
 			if (_user == null || _user.isEmpty()) {
-
 				throw new Exception();
-
 			}
-
 		} catch (Exception e) {
-
 			throw new NoSuchElementException("No such user find at here...");
-
 		}
-
 		return cleaner.deleteByProfileImageId(id);
-
 	}
 
 	@Override
@@ -1176,13 +758,9 @@ public class UserServiceImpl implements UserService {
 			@CacheEvict(value = "UserLocation", allEntries = true),
 			@CacheEvict(value = "UserTypes", allEntries = true) })
 	public boolean deleteUsersWithoutProfileImage(String userId) {
-
 		if (userId == null) {
-
 			throw new NoSuchElementException("False request...");
-
 		}
-
 		return cleaner.deleteUsersWithoutProfileImage();
 	}
 
@@ -1195,14 +773,24 @@ public class UserServiceImpl implements UserService {
 			String bucketName = supabaseProperties.getBucket().getProfile();
 			String fileName = userName;
 
+			System.out.println("bucket name :- " + bucketName);
+			System.out.println("file name :- " + fileName);
+
 			// Convert MultipartFile to bytes
 			byte[] fileBytes = file.getBytes();
+
+			System.out.println("file byted :- " + fileBytes);
 
 			// Upload to Supabase
 			String fileUrl = supabaseStorageService.uploadFile(bucketName, fileName, fileBytes, file.getContentType());
 
+			System.out.println("file url :- " + fileUrl);
+
 			return fileUrl;
 		} catch (Exception e) {
+
+		    System.out.println("file upload error :- " + e.getMessage());
+
 			throw new RuntimeException("Failed to upload profile image: " + e.getMessage());
 		}
 	}
@@ -1501,15 +1089,11 @@ public class UserServiceImpl implements UserService {
 
 					UserContact contact = userContactMap.get(user.getId());
 
-					if (contact == null) {
-
-						throw new Exception();
-
+					if (contact != null) {
+						response.setContactInfoId(contact.getId());
+						response.setEmail(contact.getEmail());
+						response.setPhone(contact.getPhone());
 					}
-
-					response.setContactInfoId(contact.getId());
-					response.setEmail(contact.getEmail());
-					response.setPhone(contact.getPhone());
 
 				} catch (Exception e) {
 
@@ -1521,16 +1105,12 @@ public class UserServiceImpl implements UserService {
 
 					UserLocation location = locationMap.get(user.getId());
 
-					if (location == null) {
-
-						throw new Exception();
-
+					if (location != null) {
+						response.setUserLocationId(location.getId());
+						response.setLocationName(location.getLocationName());
+						response.setLattitude(location.getLattitude());
+						response.setLongititude(location.getLongititude());
 					}
-
-					response.setUserLocationId(location.getId());
-					response.setLocationName(location.getLocationName());
-					response.setLattitude(location.getLattitude());
-					response.setLongititude(location.getLongititude());
 
 				} catch (Exception e) {
 
@@ -1542,8 +1122,10 @@ public class UserServiceImpl implements UserService {
 
 					UserGender gender = userGenderMap.get(user.getId());
 
-					response.setId(gender.getId());
-					response.setGender(gender.getGender());
+					if (gender != null) {
+						response.setId(gender.getId());
+						response.setGender(gender.getGender());
+					}
 
 				} catch (Exception e) {
 
@@ -1555,8 +1137,10 @@ public class UserServiceImpl implements UserService {
 
 					UserTypes types = userTypesMap.get(user.getId());
 
-					response.setUserTypeId(types.getId());
-					response.setType(types.getType());
+					if (types != null) {
+						response.setUserTypeId(types.getId());
+						response.setType(types.getType());
+					}
 
 				} catch (Exception e) {
 

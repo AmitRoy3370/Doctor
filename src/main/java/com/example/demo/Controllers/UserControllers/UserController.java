@@ -2,8 +2,8 @@ package com.example.demo.Controllers.UserControllers;
 
 import com.example.demo.Models.UserModels.User;
 import com.example.demo.Services.UserServices.UserService;
-import DTOFiles.JwtResponse;
-import DTOFiles.UserResponseDTO;
+import com.example.demo.DTOFiles.JwtResponse;
+import com.example.demo.DTOFiles.UserResponseDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -161,8 +161,6 @@ public class UserController {
 			@RequestParam(defaultValue = "10") int size) {
 		try {
 			Pageable pageable = PageRequest.of(page, size);
-			// Note: You may need to add this method to your service/repository
-			// For now using the existing method
 			Page<User> users = userService.getUsersWithPagination(pageable);
 			return ResponseEntity.ok(users);
 		} catch (Exception e) {
@@ -425,17 +423,13 @@ public class UserController {
 	 * Update profile image PUT /api/users/{id}/profileimage
 	 */
 	@PutMapping("/{id}/profileimage")
-	public ResponseEntity<?> updateProfileImage(@PathVariable String id, @RequestParam("file") MultipartFile file,
+	public ResponseEntity<?> updateProfileImage(
+			@PathVariable String id,
+			@RequestParam("file") MultipartFile file,
 			@RequestParam String userId) {
 		try {
 			User updatedUser = userService.updateProfileImage(id, file, userId);
 			return ResponseEntity.ok(updatedUser);
-		} catch (NullPointerException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse(e.getMessage()));
-		} catch (NoSuchElementException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse(e.getMessage()));
-		} catch (ArithmeticException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse(e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(errorResponse("Update failed: " + e.getMessage()));
@@ -666,7 +660,7 @@ public class UserController {
 					.body(errorResponse("Failed to check username: " + e.getMessage()));
 		}
 	}
-	
+
 	// ===============================
 	// PAGINATED LIST ENDPOINTS (NEW)
 	// ===============================

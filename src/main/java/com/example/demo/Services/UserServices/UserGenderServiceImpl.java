@@ -14,7 +14,7 @@ import com.example.demo.Models.UserModels.UserGender;
 import com.example.demo.Repositories.UserRepositories.UserGenderRepository;
 import com.example.demo.Repositories.UserRepositories.UserRepository;
 
-import CyclicCleaner.Cleaner;
+import com.example.demo.CyclicCleaner.Cleaner;
 
 @Service
 public class UserGenderServiceImpl implements UserGenderService {

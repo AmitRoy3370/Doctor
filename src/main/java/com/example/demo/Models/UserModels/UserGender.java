@@ -2,7 +2,7 @@ package com.example.demo.Models.UserModels;
 
 import java.io.Serializable;
 
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import ENUMS.Gender;
 import jakarta.persistence.Column;
@@ -15,7 +15,7 @@ import lombok.NonNull;
 public class UserGender implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3L;
 

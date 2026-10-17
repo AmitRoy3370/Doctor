@@ -1,0 +1,13 @@
+package com.example.demo.ENUMS;
+
+public enum UserType {
+
+	USER,
+	ADMIN,
+	DOCTOR,
+	HOSPITAL_OWNER,
+	AMBULENCE_OWNER,
+	PHARMECY_OWNER,
+	DIAGONISIS_CENTER_OWNER
+	
+}
