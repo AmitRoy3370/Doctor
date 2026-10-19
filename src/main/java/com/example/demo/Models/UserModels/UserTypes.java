@@ -3,7 +3,8 @@ package com.example.demo.Models.UserModels;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+import jakarta.persistence.PrePersist; // 👈 Import this
+import java.util.UUID; // 👈 Must import UUID
 import ENUMS.UserType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -16,8 +17,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.NonNull;
 
-@Entity(name = "UserTypes")
-@Table(name = "user_types")
+@Entity(name = "user_types")
+@Table(name = "\"user_types\"")
 public class UserTypes implements Serializable {
 
 	private static final long serialVersionUID = 5L;
@@ -41,6 +42,16 @@ public class UserTypes implements Serializable {
 		this.userId = userId;
 		this.type = type;
 	}
+
+	  // THIS IS THE MISSING METHOD YOU NEED TO ADD:
+    // =========================================================
+	@PrePersist
+	public void generateId() {
+		if (this.id == null || this.id.isBlank()) {
+			this.id = UUID.randomUUID().toString();
+		}
+	}
+    // =========================================================
 
 	public UserTypes() {
 		super();

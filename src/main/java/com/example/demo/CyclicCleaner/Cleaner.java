@@ -508,9 +508,13 @@ public class Cleaner {
 
 		try {
 
+		    typeRepository.deleteChildRolesByUserId(userId);
+
 			return typeRepository.deleteByUserIdNative(userId) >= 1;
 
 		} catch (Exception e) {
+
+		    System.out.println("user type remove by user id error :- " + e);
 
 			return false;
 
