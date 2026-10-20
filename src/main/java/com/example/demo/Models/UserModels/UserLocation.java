@@ -3,7 +3,8 @@ package com.example.demo.Models.UserModels;
 import java.io.Serializable;
 
 import jakarta.persistence.Id;
-
+import jakarta.persistence.PrePersist; // 👈 Import this
+import java.util.UUID; // 👈 Must import UUID
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -41,6 +42,16 @@ public class UserLocation implements Serializable {
 	public UserLocation() {
 		super();
 	}
+
+	  // THIS IS THE MISSING METHOD YOU NEED TO ADD:
+    // =========================================================
+	@PrePersist
+	public void generateId() {
+		if (this.id == null || this.id.isBlank()) {
+			this.id = UUID.randomUUID().toString();
+		}
+	}
+    // =========================================================
 
 	public String getId() {
 		return id;

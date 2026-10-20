@@ -1123,7 +1123,7 @@ public class UserServiceImpl implements UserService {
 					UserGender gender = userGenderMap.get(user.getId());
 
 					if (gender != null) {
-						response.setId(gender.getId());
+						response.setUserGenderId(gender.getId());
 						response.setGender(gender.getGender());
 					}
 
@@ -1139,6 +1139,7 @@ public class UserServiceImpl implements UserService {
 
 					if (types != null) {
 						response.setUserTypeId(types.getId());
+						types.getType().size();
 						response.setType(types.getType());
 					}
 

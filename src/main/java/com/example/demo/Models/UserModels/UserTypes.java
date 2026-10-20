@@ -16,9 +16,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.NonNull;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.FetchType;
 
 @Entity(name = "user_types")
 @Table(name = "\"user_types\"")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // 👈 Add this
 public class UserTypes implements Serializable {
 
 	private static final long serialVersionUID = 5L;
@@ -31,10 +34,10 @@ public class UserTypes implements Serializable {
 	private String userId;
 
 	@NonNull
-	@ElementCollection
 	@CollectionTable(name = "user_types_roles", joinColumns = @JoinColumn(name = "user_types_id"))
 	@Column(name = "type")
 	@Enumerated(EnumType.STRING)
+	@ElementCollection(fetch = FetchType.EAGER) // 👈 Add fetch = FetchType.EAGER
 	private List<UserType> type = new ArrayList<>();
 
 	public UserTypes(@NonNull String userId, @NonNull List<UserType> type) {

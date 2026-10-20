@@ -1,7 +1,8 @@
 package com.example.demo.Models.UserModels;
 
 import java.io.Serializable;
-
+import jakarta.persistence.PrePersist; // 👈 Import this
+import java.util.UUID; // 👈 Must import UUID
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,11 +10,11 @@ import jakarta.persistence.Table;
 import lombok.NonNull;
 
 @Entity(name = "UserContact")
-@Table(name = "UserContact")
+@Table(name = "\"UserContact\"")
 public class UserContact implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2L;
 	@Id
@@ -36,6 +37,16 @@ public class UserContact implements Serializable {
 	public UserContact() {
 		super();
 	}
+
+	  // THIS IS THE MISSING METHOD YOU NEED TO ADD:
+    // =========================================================
+	@PrePersist
+	public void generateId() {
+		if (this.id == null || this.id.isBlank()) {
+			this.id = UUID.randomUUID().toString();
+		}
+	}
+    // =========================================================
 
 	public String getId() {
 		return id;

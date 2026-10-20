@@ -27,10 +27,10 @@ public class UserLocationServiceImpl implements UserLocationService {
 	private UserLocationRepository locationRepository;
 
 	private AddressValidator adressValidator = new AddressValidator();
-	
+
 	@Autowired
 	private Cleaner cleaner;
-	
+
 	private static final String cacheValue = "UserLocation";
 
 	@Override
@@ -85,7 +85,7 @@ public class UserLocationServiceImpl implements UserLocationService {
 				throw new Exception();
 
 			}
-			
+
 		} catch (Exception e) {
 
 			throw new ArithmeticException("location data is not valid...");
@@ -183,7 +183,7 @@ public class UserLocationServiceImpl implements UserLocationService {
 				throw new Exception();
 
 			}
-			
+
 		} catch (Exception e) {
 
 			throw new ArithmeticException("location data is not valid...");
@@ -206,31 +206,31 @@ public class UserLocationServiceImpl implements UserLocationService {
 	@Override
 	@Cacheable(value = cacheValue, key = "'findById_' + #id")
 	public UserLocation findById(String id) {
-		
+
 		if(id == null) {
-			
+
 			throw new NullPointerException("False request...");
-			
+
 		}
-		
+
 		try {
-			
+
 			UserLocation location = locationRepository.findById(id).get();
-			
+
 			if(location == null) {
-				
+
 				throw new Exception();
-				
+
 			}
-			
+
 			return location;
-			
+
 		} catch(Exception e) {
-			
+
 			throw new NoSuchElementException("No such location find at here...");
-			
+
 		}
-		
+
 	}
 
 	@Override
@@ -238,23 +238,23 @@ public class UserLocationServiceImpl implements UserLocationService {
 	public List<UserLocation> findAll() {
 
 		try {
-			
+
 			List<UserLocation> location = locationRepository.findAll();
-			
+
 			if(location == null || location.isEmpty()) {
-				
+
 				throw new Exception();
-				
+
 			}
-			
+
 			return location;
-			
+
 		} catch(Exception e) {
-			
+
 			throw new NoSuchElementException("No such location find at here...");
-			
+
 		}
-		
+
 	}
 
 	@Override
@@ -262,29 +262,29 @@ public class UserLocationServiceImpl implements UserLocationService {
 	public UserLocation findByUserId(String userId) {
 
 		if(userId == null) {
-			
+
 			throw new NullPointerException("False request...");
-			
+
 		}
-		
+
 		try {
-			
+
 			UserLocation location = locationRepository.findByUserId(userId);
-			
+
 			if(location == null) {
-				
+
 				throw new Exception();
-				
+
 			}
-			
+
 			return location;
-			
+
 		} catch(Exception e) {
-			
+
 			throw new NoSuchElementException("No such location find at here...");
-			
+
 		}
-		
+
 	}
 
 	@Override
@@ -292,29 +292,29 @@ public class UserLocationServiceImpl implements UserLocationService {
 	public List<UserLocation> findByLocationNameContainingIgnoreCase(String locationName) {
 
 		if(locationName == null) {
-			
+
 			throw new NullPointerException("False request...");
-			
+
 		}
-		
+
 		try {
-			
+
 			List<UserLocation> location = locationRepository.findByLocationNameContainingIgnoreCase(locationName);
-			
+
 			if(location == null) {
-				
+
 				throw new Exception();
-				
+
 			}
-			
+
 			return location;
-			
+
 		} catch(Exception e) {
-			
+
 			throw new NoSuchElementException("No such location find at here...");
-			
+
 		}
-		
+
 	}
 
 	@Override
@@ -322,21 +322,21 @@ public class UserLocationServiceImpl implements UserLocationService {
 	public List<UserLocation> findByLattitudeOrLongititude(double lattitude, double longititude) {
 
 		try {
-			
+
 			List<UserLocation> location = locationRepository.findByLattitudeOrLongititude(lattitude, longititude);
-			
+
 			if(location == null) {
-				
+
 				throw new Exception();
-				
+
 			}
-			
+
 			return location;
-			
+
 		} catch(Exception e) {
-			
+
 			throw new NoSuchElementException("No such location find at here...");
-			
+
 		}
 	}
 
@@ -389,7 +389,7 @@ public class UserLocationServiceImpl implements UserLocationService {
 
 		}
 
-		return cleaner.deleteGender(id);
+		return cleaner.deleteUserLocation(id);
 	}
 
 }

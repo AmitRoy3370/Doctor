@@ -79,6 +79,8 @@ public class UserContactServiceImpl implements UserContactService {
 
 			throw new ArithmeticException("This user's contact infor already setted...");
 
+		} catch(Exception e) {
+
 		}
 
 		try {
