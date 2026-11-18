@@ -5,11 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.Models.DoctorsModels.Doctor;
+import com.example.demo.Models.DoctorsModels.DoctorJoinRequest;
 import com.example.demo.Models.UserModels.User;
 import com.example.demo.Models.UserModels.UserContact;
 import com.example.demo.Models.UserModels.UserGender;
 import com.example.demo.Models.UserModels.UserLocation;
 import com.example.demo.Models.UserModels.UserTypes;
+import com.example.demo.Repositories.DoctorsRepository.DoctorRepository;
+import com.example.demo.Repositories.DoctorsRepository.DoctorsJoinRequestRepository;
 import com.example.demo.Repositories.UserRepositories.UserContactRepository;
 import com.example.demo.Repositories.UserRepositories.UserGenderRepository;
 import com.example.demo.Repositories.UserRepositories.UserLocationRepository;
@@ -36,6 +40,12 @@ public class Cleaner {
 	private UserTypeRepository typeRepository;
 
 	@Autowired
+	private DoctorsJoinRequestRepository doctorJoinRequestRepository;
+
+	@Autowired
+	private DoctorRepository doctorRepository;
+
+	@Autowired
 	private RedisService redisService;
 
 	public boolean removeUserById(String id) {
@@ -55,6 +65,38 @@ public class Cleaner {
 			if (deleted >= 1) {
 
 				redisService.clearAllCaches();
+
+				try {
+
+					DoctorJoinRequest request = doctorJoinRequestRepository.findByUserId(user.getId());
+
+					if (request != null) {
+
+						removeDoctorsJoinRequest(request.getId());
+
+					}
+
+				} catch (Exception e) {
+
+					System.out.println(e.getMessage());
+
+				}
+
+				try {
+
+					Doctor doctor = doctorRepository.findByUserId(user.getId());
+
+					if (doctor != null) {
+
+						removeDoctor(doctor.getId());
+
+					}
+
+				} catch (Exception e) {
+
+					System.out.println(e.getMessage());
+
+				}
 
 				try {
 
@@ -140,6 +182,38 @@ public class Cleaner {
 
 					try {
 
+						DoctorJoinRequest request = doctorJoinRequestRepository.findByUserId(i.getId());
+
+						if (request != null) {
+
+							removeDoctorsJoinRequest(request.getId());
+
+						}
+
+					} catch (Exception e) {
+
+						System.out.println(e.getMessage());
+
+					}
+
+					try {
+
+						Doctor doctor = doctorRepository.findByUserId(i.getId());
+
+						if (doctor != null) {
+
+							removeDoctor(doctor.getId());
+
+						}
+
+					} catch (Exception e) {
+
+						System.out.println(e.getMessage());
+
+					}
+
+					try {
+
 						UserContact contact = userContactRepository.findByUserId(i.getId()).get();
 
 						if (contact != null) {
@@ -221,6 +295,38 @@ public class Cleaner {
 				redisService.clearAllCaches();
 
 				for (User i : users) {
+
+					try {
+
+						DoctorJoinRequest request = doctorJoinRequestRepository.findByUserId(i.getId());
+
+						if (request != null) {
+
+							removeDoctorsJoinRequest(request.getId());
+
+						}
+
+					} catch (Exception e) {
+
+						System.out.println(e.getMessage());
+
+					}
+
+					try {
+
+						Doctor doctor = doctorRepository.findByUserId(i.getId());
+
+						if (doctor != null) {
+
+							removeDoctor(doctor.getId());
+
+						}
+
+					} catch (Exception e) {
+
+						System.out.println(e.getMessage());
+
+					}
 
 					try {
 
@@ -508,13 +614,13 @@ public class Cleaner {
 
 		try {
 
-		    typeRepository.deleteChildRolesByUserId(userId);
+			typeRepository.deleteChildRolesByUserId(userId);
 
 			return typeRepository.deleteByUserIdNative(userId) >= 1;
 
 		} catch (Exception e) {
 
-		    System.out.println("user type remove by user id error :- " + e);
+			System.out.println("user type remove by user id error :- " + e);
 
 			return false;
 
@@ -539,6 +645,74 @@ public class Cleaner {
 			typeRepository.deleteById(id);
 
 			return count != typeRepository.count();
+
+		} catch (Exception e) {
+
+			return false;
+
+		}
+
+	}
+
+	public boolean removeDoctorsJoinRequest(String id) {
+
+		try {
+
+			DoctorJoinRequest request = doctorJoinRequestRepository.findById(id).get();
+
+			if (request == null) {
+
+				throw new Exception();
+
+			}
+
+			long count = doctorJoinRequestRepository.count();
+
+			doctorJoinRequestRepository.deleteById(id);
+
+			if (count != doctorJoinRequestRepository.count()) {
+
+				return true;
+
+			} else {
+
+				return false;
+
+			}
+
+		} catch (Exception e) {
+
+			return false;
+
+		}
+
+	}
+
+	public boolean removeDoctor(String id) {
+
+		try {
+
+			Doctor doctor = doctorRepository.findById(id).get();
+
+			if (doctor == null) {
+
+				throw new Exception();
+
+			}
+
+			long count = doctorRepository.count();
+
+			doctorRepository.deleteById(id);
+
+			if (count != doctorRepository.count()) {
+
+				return true;
+
+			} else {
+
+				return false;
+
+			}
 
 		} catch (Exception e) {
 

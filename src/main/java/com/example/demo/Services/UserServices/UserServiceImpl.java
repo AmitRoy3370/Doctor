@@ -91,6 +91,18 @@ public class UserServiceImpl implements UserService {
 			throw new NullPointerException("Have to put all the data perfectly at here...");
 		}
 
+		if (user.getProfileImageId() != null) {
+
+			if (supabaseStorageService.isValidSupabaseUrl(user.getProfileImageId())) {
+
+			} else {
+
+				throw new ArithmeticException("False profileImage url...");
+
+			}
+
+		}
+
 		try {
 			User _user = userRepository.findByUserName(user.getUserName().trim()).get();
 			if (_user != null) {
@@ -196,6 +208,18 @@ public class UserServiceImpl implements UserService {
 		System.out.println("before encrypted :- " + user.getPassword());
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		System.out.println("after encrypted :- " + user.getPassword());
+
+		if (user.getProfileImageId() != null) {
+
+			if (supabaseStorageService.isValidSupabaseUrl(user.getProfileImageId())) {
+
+			} else {
+
+				throw new ArithmeticException("False profileImage url...");
+
+			}
+
+		}
 
 		try {
 			if (file == null || file.isEmpty()) {
@@ -305,7 +329,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-		@Override
+	@Override
 	@Caching(evict = { @CacheEvict(value = cacheValue, allEntries = true),
 			@CacheEvict(value = "UserContact", allEntries = true), @CacheEvict(value = "UserGender", allEntries = true),
 			@CacheEvict(value = "UserLocation", allEntries = true),
@@ -341,7 +365,9 @@ public class UserServiceImpl implements UserService {
 					try {
 						supabaseStorageService.deleteFile(bucketName, fileName);
 					} catch (Exception e) {
-						System.out.println("Warning: Old image not found in Supabase or delete failed. Proceeding to upload. Error: " + e.getMessage());
+						System.out.println(
+								"Warning: Old image not found in Supabase or delete failed. Proceeding to upload. Error: "
+										+ e.getMessage());
 					}
 				}
 
@@ -789,7 +815,7 @@ public class UserServiceImpl implements UserService {
 			return fileUrl;
 		} catch (Exception e) {
 
-		    System.out.println("file upload error :- " + e.getMessage());
+			System.out.println("file upload error :- " + e.getMessage());
 
 			throw new RuntimeException("Failed to upload profile image: " + e.getMessage());
 		}

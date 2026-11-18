@@ -19,7 +19,7 @@ public interface UserService {
     public JwtResponse logIn(String userName, String password);
 
     // ---- Update ----
-    public User updateUser(User user, MultipartFile profileImage, String id, String userId);
+    public User updateUser( User user, MultipartFile profileImage, String id, String userId);
     public User updateName(String id, String name);
     public User updateUserName(String id, String userName, String userId);
     public User updateProfileImage(String id, MultipartFile file, String userId);

@@ -13,8 +13,15 @@ public class SupabaseProperties {
 
     public static class Bucket {
         private String profile;
+        private String cv;
 
-        public String getProfile() { return profile; }
+        public String getCv() {
+			return cv;
+		}
+		public void setCv(String cv) {
+			this.cv = cv;
+		}
+		public String getProfile() { return profile; }
         public void setProfile(String profile) { this.profile = profile; }
     }
 

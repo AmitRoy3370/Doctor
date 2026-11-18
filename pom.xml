@@ -41,6 +41,12 @@
 			<artifactId>okhttp</artifactId>
 		</dependency>
 
+                <dependency>
+                   <groupId>io.hypersistence</groupId>
+                   <artifactId>hypersistence-utils-hibernate-63</artifactId>
+                   <version>3.8.3</version>
+                </dependency>
+
 		<!-- Spring Data Redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
